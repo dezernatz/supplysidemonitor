@@ -19,6 +19,13 @@
 get_q.impfull_destatis<-function(){
 
   current_year<-format(Sys.Date(), "%Y")%>%as.numeric()
+  current_month<-as.numeric(format(Sys.Date(), "%m"))
+
+  # Account for 3-month publication lag
+  if(current_month <= 3){
+    current_year <- current_year - 1
+  }
+
   data_import_2d<-map_df(2008:current_year,function(x){
     gen_cube("51000BM221", database = "genesis",startyear=x,endyear=x,contents="GEWE")%>%
       mutate(nace2=sub("GP19-(.*)","\\1",GP19B2),
